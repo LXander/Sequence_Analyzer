@@ -2,7 +2,7 @@
 import os
 import sqlite3
 from flask import Flask,request,session,g,redirect,url_for,abort,render_template,flash
-import example_builder,search_region
+import example_builder,search_region,name_load
 import json,requests,forms
 
 from flask_wtf.csrf import  CsrfProtect
@@ -51,7 +51,7 @@ def data_load():
 def initdb_command():
     """Initializes the database."""
     init_db()
-    data_load()
+    name_load()
     print ("Initialized the database")
 
 
@@ -138,11 +138,14 @@ def quality(id):
 
 @app.route('/search',methods=['GET','POST'])
 def search():
+    geneName = name_load.get_gene_name()
     form = forms.SearchForm()
     if form.validate_on_submit():
 
         db = get_db()
         cur = db.execute('select * from resource')
+        print (form.GeneName.data)
+    return render_template('search.html',form=form,geneName = geneName)
 
 
 @app.route('/comparision/<int:id>',methods=['GET','POST'])

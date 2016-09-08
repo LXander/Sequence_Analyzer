@@ -1,0 +1,29 @@
+{% extends "banner.html" %}
+{% block body %}
+
+<div class="jumbotron">
+    <form method="POST" action="{{ url_for('search')}}">
+        <h1>Search Sequence</h1>
+        {% if form.errors %}
+                <ul class="errors">
+                    {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+                    {% for error in field_errors %}
+                    <li>{{ form[field_name].label }}: {{ error }}</li>
+                    {% endfor %}
+                    {% endfor %}
+                </ul>
+                {% endif %}
+        {{ form.hidden_tag() }}
+        <input type="text" class="span3" id="{{form.GeneName.name}}" name="{{form.GeneName.name}}"
+               data-provide="typeahead" data-items="4"/>
+        <p></p>
+        <p>{{form.submit(class='btn btn-primary')}}</p>
+
+    </form>
+</div>
+<script>
+    var subjects ={{geneName | safe}};
+    $('#{{form.GeneName.name}}').typeahead({source: subjects})
+</script>
+
+{% endblock %}}

@@ -10,6 +10,9 @@
     <link rel="stylesheet" href="{{ url_for('static',filename='css/bootstrap.min.css') }}">
     <link rel="stylesheet" href="{{ url_for('static',filename='css/simulator.css') }}">
     <link rel="stylesheet" href="{{ url_for('static',filename='css/bootstrap-multiselect.css') }}">
+    <script src="{{url_for('static',filename='js/jquery-3.1.0.min.js')}}"></script>
+    <script src="{{url_for('static',filename='js/bootstrap3-typeahead.min.js')}}"></script>
+    <script src="{{url_for('static',filename='js/bootstrap-multiselect.js')}}"></script>
 
 
 </head>
@@ -45,16 +48,11 @@
 
 
 <!-- jQuery first, then Tether, then Bootstrap JS. -->
-<script src="{{url_for('static',filename='js/jquery-3.1.0.min.js')}}"></script>
+
 <script src="{{url_for('static',filename='js/tether.min.js')}}"></script>
 <script src="{{url_for('static',filename='js/bootstrap.min.js')}}"></script>
-<script src="{{url_for('static',filename='js/bootstrap-multiselect.js')}}"></script>
-<script type="text/javascript">
-  $(document).ready(function() {
-    $('.multiselect').multiselect();
-  });
 
 
-</script>
+
 </body>
 </html>

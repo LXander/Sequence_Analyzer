@@ -13,5 +13,5 @@ class CompareFoem(Form):
 
 
 class SearchForm(Form):
-    GeneName = StringField('Name',validators.required())
+    GeneName = StringField('Name',[validators.required()])
     submit = SubmitField("Search")
