@@ -6,7 +6,7 @@ standard_sequence_choice = {'NA12878-NISTv2.19':'NA12878-NISTv2.19','NA12878-GIA
 
 class CompareFoem(Form):
     methods = SelectField('Methods',coerce=str , choices=[('VCF Comparison','VCF Comparison'),('Vcfeval + Hap.py Comparison','Vcfeval + Hap.py Comparison')])
-    standardsequence = SelectField('Standard String',coerce=str,choices=[('NA12878-NISTv2.19','NA12878-NISTv2.19'),('NA12878-GIABv3.2','NA12878-GIABv3.2'),('HG002-GIABv3.2','HG002-GIABv3.2')])
+    #standardsequence = SelectField('Standard String',coerce=str,choices=[('NA12878-NISTv2.19','NA12878-NISTv2.19'),('NA12878-GIABv3.2','NA12878-GIABv3.2'),('HG002-GIABv3.2','HG002-GIABv3.2')])
     MultipleSequence = SelectMultipleField('Multiple String',coerce=str,choices=[('NA12878-NISTv2.19','NA12878-NISTv2.19'),('NA12878-GIABv3.2','NA12878-GIABv3.2'),('HG002-GIABv3.2','HG002-GIABv3.2')])
 
     submit = SubmitField("Compare")

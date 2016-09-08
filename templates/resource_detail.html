@@ -7,18 +7,17 @@
 
         <ul class="nav nav-tabs card-header-tabs pull-xs-left" id="resourceTab" role="tablist">
             <li class="nav-item">
-                <a class="nav-link active" data-toggle="tab" href="#home" role="tab" aria-controls="home">Resource : {{
-                    resource.id }}</a>
+                <a class="nav-link" data-toggle="tab" href="#info" role="tab" aria-controls="profile">Information</a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" data-toggle="tab" href="#profile" role="tab" aria-controls="profile">Comparision</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#info" role="tab" aria-controls="profile">Information</a>
+                <a class="nav-link active" data-toggle="tab" href="#home" role="tab" aria-controls="home">Json</a>
             </li>
-            <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#settings" role="tab" aria-controls="profile">Information</a>
-            </li>
+
+
+
 
         </ul>
 
@@ -46,25 +45,21 @@
                     {{ form.hidden_tag() }}
 
                     <div class="form-group">
-                        {{form.methods.label}}
+                        {{form.methods.label}}<br/>
                         {{form.methods()}}
 
                     </div>
-                    <div class="form-group">
-                        {{form.standardsequence.label}}
-                    {{form.standardsequence()}}
-                    </div>
+
 
                     <div class="form-group">
-                        {{form.MultipleSequence.lable}}
+                        StandardSequence<br/>
                         {{form.MultipleSequence(class='multiselect',multiple='multiple')}}
                     </div>
                     {{form.submit(class='btn btn-primary')}}
                     <!--<button type="submit" class="btn btn-primary">Comparision</button>
                -->
                 </form>
-                <a href="{{  url_for('quality',id=resource.id) }}" class="btn btn-primary">Comparision</a>
-            </div>
+               </div>
             <div class="tab-pane" id="info" role="tabpanel"></div>
             <div class="tab-pane" id="settings" role="tabpanel"></div>
         </div>
@@ -93,36 +88,124 @@
 
     var sequence = {{resource.json | safe}};
 
-    panel.append('p')
-            .text('type\t' + sequence.type);
+
+
 
     panel.append('p')
-            .text('refseq\t' + sequence.referenceSeq.referenceSeqId.coding[0].code);
+            .text('type:    '+ sequence.type);
 
     panel.append('p')
-            .text('start\t' + sequence.referenceSeq.windowStart);
+            .text('refseq:    ' + sequence.referenceSeq.referenceSeqId.coding[0].code);
 
     panel.append('p')
-            .text('end\t'+sequence.referenceSeq.windowEnd);
+            .text('start:    ' + sequence.referenceSeq.windowStart);
+
+    panel.append('p')
+            .text('end:    ' + sequence.referenceSeq.windowEnd);
 
 
     var variants = sequence.variant;
 
     var pos = [];
+    for (var i = 0; i < variants.length; i++) {
+        pos[i] = variants[i].start;
+    }
 
+    var min = d3.min(pos);
+    var max = d3.max(pos);
+
+    var width = 600;
+    var height = 100;
+    var yPos = 10;
+
+
+    var svg = panel.append("svg")
+            .attr('width', '100%')
+            .attr('height', height);
+
+    var dataset = [width - 10];
+
+    svg.selectAll('rect')
+            .data(dataset)
+            .enter()
+            .append('rect')
+            .attr('x', 10)
+            .attr('y', yPos)
+            .attr('width', function (d) {
+                return d;
+            })
+            .attr('height', 10)
+            .attr('fill', '#2BC890');
+
+    var linear = d3.scaleLinear()
+            .domain([min, max])
+            .range([40, width - 40]);
+
+    var tooltip = d3.select("body")
+            .append("div")
+            .attr("class", "tooltip")
+            .style("opacity", 0.0);
+
+    svg.selectAll('rect')
+            .data(variants)
+            .enter()
+            .append('rect')
+            .attr('x', function (d) {
+                return linear(d.start);
+            })
+            .attr('y', yPos)
+            .attr('width', 10)
+            .attr('height', 10)
+            .attr('fill', '#E54A5C')
+            .on("mouseover", function (d) {
+                tooltip.html('start: '+d.start + "<br />" +
+                        'end: '+d.end + " <br/>" +
+                        'observedAllele: '+d.observedAllele+'<br/>'+
+                        'referenceAllele: '+d.referenceAllele)
+                        .style("left", (d3.event.pageX) + "px")
+                        .style("top", (d3.event.pageY + 20) + "px")
+                        .style("opacity", 1.0);
+            })
+            .on("mousemove", function (d) {
+                /* 鼠标移动时，更改样式 left 和 top 来改变提示框的位置 */
+
+                tooltip.style("left", (d3.event.pageX) + "px")
+                        .style("top", (d3.event.pageY + 20) + "px");
+            })
+            .on("mouseout", function (d) {
+                /* 鼠标移出时，将透明度设定为0.0（完全透明）*/
+
+                tooltip.style("opacity", 0.0);
+            });
+
+
+    var arc = d3.arc()
+            .startAngle(function (d) {
+                return d.x;
+            })
+            .endAngle(function (d) {
+                return d.x + d.dx;
+            })
+            .innerRadius(function (d) {
+                return Math.sqrt(d.dy)
+            })
+            .outerRadius(function (d) {
+                return Math.sqrt(d.y + d.dy);
+            });
 
 
     var sequenceScale = d3.scaleLinear()
-            .domain([sequence.referenceSeq.windowStart,sequence.referenceSeq.windowEnd])
-            .range([0,800]);
-
+            .domain([sequence.referenceSeq.windowStart, sequence.referenceSeq.windowEnd])
+            .range([0, 800]);
 
 
 </script>
 <script type="text/javascript">
-  $(document).ready(function() {
-    $('.multiselect').multiselect();
-  });
+    $(document).ready(function () {
+        $('.multiselect').multiselect();
+        $('.tooltip').tooltipster();
+    });
+
 </script>
 
 {% endblock %}}
