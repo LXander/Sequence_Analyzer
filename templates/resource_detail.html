@@ -93,11 +93,22 @@
 
     var sequence = {{resource.json | safe}};
 
-    panel.append('h1')
-            .text(sequence.type);
+    panel.append('p')
+            .text('type\t' + sequence.type);
 
-    panel.append('h2')
-            .text(sequence.referenceSeq.referenceSeqId.coding[0].code);
+    panel.append('p')
+            .text('refseq\t' + sequence.referenceSeq.referenceSeqId.coding[0].code);
+
+    panel.append('p')
+            .text('start\t' + sequence.referenceSeq.windowStart);
+
+    panel.append('p')
+            .text('end\t'+sequence.referenceSeq.windowEnd);
+
+
+    var variants = sequence.variant;
+
+    var pos = [];
 
 
 

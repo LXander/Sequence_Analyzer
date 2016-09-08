@@ -3,7 +3,7 @@ import os
 import sqlite3
 from flask import Flask,request,session,g,redirect,url_for,abort,render_template,flash
 import example_builder,search_region,name_load
-import json,requests,forms
+import json,requests,forms,random
 
 from flask_wtf.csrf import  CsrfProtect
 
@@ -45,6 +45,21 @@ def data_load():
 
         db.execute('insert into resource(json) values(?)',
                    [example])
+    db.commit()
+
+def gene_data_creater(geneDict):
+    db = get_db()
+    builder = example_builder.builder(geneDict)
+    for _ in range(random.randint(3,15)):
+        example = builder.build_example()
+        db.execute('insert into genedata(json) values(?)',
+                   [example])
+    db.commit()
+
+def gene_db_creater():
+    db = get_db()
+    db.execute('drop table if exists genedata;')
+    db.execute("create table genedata(id integer primary key autoincrement,'json' varchar not null);")
     db.commit()
 
 @app.cli.command('initdb')
@@ -135,6 +150,33 @@ def quality(id):
         return render_template('resource_quality.html',quality = quality)
     return 'hello world'
 
+@app.route('/sequence/<int:id>',methods=['GET','POST'])
+def sequence_page(id):
+    form = forms.CompareFoem()
+    if form.validate_on_submit():
+
+        print("validate")
+        print(form.MultipleSequence.data)
+        warp = {}
+        warp['method'] = form.methods.data
+        warp['standard_sequence'] = form.MultipleSequence.data
+        db = get_db()
+        cur = db.execute('select * from genedata where id = (?)', [id])
+        resource = cur.fetchone()
+        if resource:
+            res = json.loads(resource['json'])
+            warp['variant'] = res['variant']
+            warp['referenceSeq'] = res['referenceSeq']
+            quality = requests.post('http://127.0.0.1:8388/get_quality', json=warp)
+            return render_template('resource_quality.html', quality=quality)
+
+    print("invalidate")
+    db = get_db()
+    cur = db.execute('select * from genedata where id = (?)', [id])
+    resource = cur.fetchone()
+    if resource:
+        return render_template('resource_detail.html', resource=resource, form=form, dumps=json.dumps, loads=json.loads)
+    return abort(404)
 
 @app.route('/search',methods=['GET','POST'])
 def search():
@@ -142,9 +184,22 @@ def search():
     form = forms.SearchForm()
     if form.validate_on_submit():
 
+        gene_db_creater()
+        geneDicts = search_region.get_geneDicts(form.GeneName.data)
+        gene_data_creater(geneDicts[0])
+
         db = get_db()
-        cur = db.execute('select * from resource')
-        print (form.GeneName.data)
+        cur = db.execute('select * from genedata;')
+        genes = cur.fetchall()
+        geneData = {}
+        for gene in genes:
+            geneData[gene['id']] = json.loads(gene['json'])
+        ids = [gene['id'] for gene in genes]
+        print (ids)
+        return render_template('gene_resource_list.html',ids=ids)
+
+
+
     return render_template('search.html',form=form,geneName = geneName)
 
 

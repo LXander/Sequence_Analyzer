@@ -1,6 +1,6 @@
 {% extends "banner.html" %}
 {% block body %}
-<div class="card list-card">
+<div class="card resource-list">
 <table class="table table-hover ">
   <thead>
     <tr>
@@ -11,7 +11,7 @@
   <tbody>
     {% for id in ids %}
       <tr>
-        <td><a href='resource/{{id.id}}'>Resource {{id.id}}</a></td>
+        <td><a href='sequence/{{id}}'>Resource {{id}}</a></td>
       </tr>
     {% endfor %}
   </tbody>

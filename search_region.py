@@ -32,3 +32,8 @@ def get_region(idlist):
         RegionDict.append(LocDict)
         
     return RegionDict
+
+def get_geneDicts(name):
+    IDList = retrive_id_by_name(name)
+    geneDicts = get_region(IDList)
+    return geneDicts

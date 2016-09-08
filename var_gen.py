@@ -4,9 +4,11 @@ import json
 
 
 class var_gen:
-    def __init__(self):
+    def __init__(self,start,stop):
+        self.start = int(start)
+        self.stop = int(stop)
         self.Alleles = ['A','C','G','T']
-        self.cursor = 1
+        self.cursor = 1+self.start
         self.var_max_len = 10
         self.var_max_gap = 2000
         self.var_min_gap = 100
@@ -38,7 +40,7 @@ class var_gen:
         return var
 
     def vars_gen(self):
-        self.__init__()
+        self.__init__(self.start,self.stop)
         var_num = random.randint(1,self.var_max_num)
         vars = []
         for i in range(var_num):
@@ -48,5 +50,5 @@ class var_gen:
 
 
 if __name__ == '__main__':
-    gen = var_gen()
+    gen = var_gen(58353498,58346805)
     print (json.dumps(gen.vars_gen(),indent=4))
