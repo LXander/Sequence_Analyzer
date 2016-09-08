@@ -46,7 +46,7 @@
 
                     <div class="form-group">
                         {{form.methods.label}}<br/>
-                        {{form.methods()}}
+                        {{form.methods(class='form-control')}}
 
                     </div>
 
@@ -60,7 +60,13 @@
                -->
                 </form>
                </div>
-            <div class="tab-pane" id="info" role="tabpanel"></div>
+            <div class="tab-pane" id="info" role="tabpanel">
+                <table class="table table-striped">
+                    <thead>
+
+                    <tbody id="tbody">
+                    </tbody>
+            </div>
             <div class="tab-pane" id="settings" role="tabpanel"></div>
         </div>
     </div>
@@ -81,12 +87,20 @@
 
 
 </script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('.multiselect').multiselect();
+        $('.tooltip').tooltipster();
+    });
+
+</script>
 <script src="http://d3js.org/d3.v4.min.js" charset="utf-8"></script>
 <script>
     var panel = d3.select('body')
             .select('#info');
 
     var sequence = {{resource.json | safe}};
+
 
 
 
@@ -200,12 +214,6 @@
 
 
 </script>
-<script type="text/javascript">
-    $(document).ready(function () {
-        $('.multiselect').multiselect();
-        $('.tooltip').tooltipster();
-    });
 
-</script>
 
 {% endblock %}}

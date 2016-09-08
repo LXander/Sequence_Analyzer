@@ -125,6 +125,7 @@ def resource_page(id):
             warp['variant'] = res['variant']
             warp['referenceSeq'] = res['referenceSeq']
             quality = requests.post('http://127.0.0.1:8388/get_quality', json=warp)
+            print (quality.text)
             return render_template('resource_quality.html',quality = quality)
 
 

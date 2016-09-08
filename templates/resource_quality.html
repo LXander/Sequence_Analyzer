@@ -5,10 +5,16 @@
 <div class="card resource-card">
     <div class="card-header">
 
-        <ul class="nav nav-tabs card-header-tabs pull-xs-left" id="resourceTab" role="tablist">
+           <ul class="nav nav-tabs card-header-tabs pull-xs-left" id="resourceTab" role="tablist">
             <li class="nav-item">
-                <a class="nav-link active" data-toggle="tab" href="#home" role="tab" aria-controls="home">Quality</a>
+                <a class="nav-link" data-toggle="tab" href="#messages" role="tab" aria-controls="profile">Information</a>
             </li>
+
+            <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#Jsons" role="tab" aria-controls="home">Json</a>
+            </li>
+
+
 
 
         </ul>
@@ -16,45 +22,78 @@
     </div>
     <div class="card-block">
         <div class="tab-content">
-            <div class="tab-pane active" id="home" role="tabpanel">
+            <div class="tab-pane active" id="Jsons" role="tabpanel">
       <pre id="json">
 
 </pre>
             </div>
-            <div class="tab-pane" id="profile" role="tabpanel">
-                <form>
 
+            <div class="tab-pane" id="messages" role="tabpanel">
+                <table class="table table-striped">
+                    <thead>
+                    <tr>
+                        <th>Standard Sequence</th>
+                        <th>precision</th>
 
-                    <div class="form-group">
-                        <label for="methodSelect">Methods select</label>
-                        <select class="form-control" id="methodSelect">
-                            <option> VCF Comparison</option>
-                            <option> Vcfeval + Hap.py Comparison</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="standardSequence">Sequence select</label>
-                        <select class="form-control" id="standardSequence">
-                            <option>NA12878-NISTv2.19</option>
-                            <option>NA12878-GIABv3.2</option>
-                            <option>HG002-GIABv3.2</option>
-                        </select>
-                    </div>
-
-                </form>
-                 </div>
-            <div class="tab-pane" id="messages" role="tabpanel">c</div>
+                        <th>truthTP</th>
+                        <th>queryTP</th>
+                        <th>truthFN</th>
+                        <th>queryFP</th>
+                    </tr>
+                    </thead>
+                    <tbody id="tbody">
+                    </tbody>
+                </table>
+            </div>
             <div class="tab-pane" id="settings" role="tabpanel">d</div>
         </div>
     </div>
 </div>
 
-<script type="text/javascript">
 
-    window.onload = function () {
+<script>
+    qua = {{quality.text | safe}};
+
+    quality = qua.quality;
+
+    var arr = new Array()
+    for (var i = 0; i < quality.length; i++) {
+        arr[i] = {x: i, y: quality[i].precision}
+    }
+
+    var by = function (a, b) {
+        b.y - a.y;
+    }
+
+    arr.sort()
+
+
+
+    var init = function (arr) {
+        var template = "";
+        for (var j = 0; j < arr.length; j++) {
+            var i = arr[j].x;
+            template += "<tr>";
+
+            template += "<td>" + quality[i].standardSequence.text + "</td>";
+            template += "<td>" + quality[i].precision + "</td>";
+            template += "<td>" + quality[i].truthTP + "</td>";
+            template += "<td>" + quality[i].queryTP + "</td>";
+            template += "<td>" + quality[i].truthFN + "</td>";
+            template += "<td>" + quality[i].queryFP + "</td>";
+
+
+            template += "</tr>";
+        }
+        document.getElementById("tbody").innerHTML = template;
+
+    };
+
+
+        window.onload = function () {
 
         document.getElementById("json").innerHTML = JSON.stringify(str, null, 2);
+            init(arr);
     };
 
     str = {{quality.text | safe}};
@@ -64,5 +103,12 @@
     })
 
 
+
+
+
+
+
 </script>
+
+
 {% endblock %}}
