@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Required meta tags always come first -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/simulator.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static',filename='css/bootstrap-multiselect.css') }}">
+
+
+</head>
+<body>
+<nav class="navbar navbar-light bg-faded">
+    <a class="navbar-brand" href="#">FDA simulator</a>
+    <ul class="nav navbar-nav">
+        <li class="nav-item active">
+            <a class="nav-link" href="#">Resource <span class="sr-only">(current)</span></a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">Features</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">Browser</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">About</a>
+        </li>
+    </ul>
+    <form class="form-inline pull-xs-right">
+        <input class="form-control" type="text" placeholder="Search">
+        <button class="btn btn-outline-success" type="submit">Search</button>
+    </form>
+</nav>
+
+{% for message in get_flashed_messages() %}
+<div class=flash>{{ message }}</div>
+{% endfor %}
+
+
+{% block body %}{% endblock %}
+
+
+<!-- jQuery first, then Tether, then Bootstrap JS. -->
+<script src="{{url_for('static',filename='js/jquery-3.1.0.min.js')}}"></script>
+<script src="{{url_for('static',filename='js/tether.min.js')}}"></script>
+<script src="{{url_for('static',filename='js/bootstrap.min.js')}}"></script>
+<script src="{{url_for('static',filename='js/bootstrap-multiselect.js')}}"></script>
+<script type="text/javascript">
+  $(document).ready(function() {
+    $('.multiselect').multiselect();
+  });
+
+
+</script>
+</body>
+</html>

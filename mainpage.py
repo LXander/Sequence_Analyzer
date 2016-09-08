@@ -2,10 +2,9 @@
 import os
 import sqlite3
 from flask import Flask,request,session,g,redirect,url_for,abort,render_template,flash
-import example_builder
-import json
-import requests
-import forms
+import example_builder,search_region
+import json,requests,forms
+
 from flask_wtf.csrf import  CsrfProtect
 
 csrf = CsrfProtect()
@@ -99,9 +98,10 @@ def resource_page(id):
     if form.validate_on_submit():
 
         print ("validate")
+        print (form.MultipleSequence.data)
         warp = {}
         warp['method'] = form.methods.data
-        warp['standard_sequence'] = form.standardsequence.data
+        warp['standard_sequence'] = form.MultipleSequence.data
         db = get_db()
         cur = db.execute('select * from resource where id = (?)',[id])
         resource = cur.fetchone()
@@ -135,6 +135,14 @@ def quality(id):
         return render_template('resource_quality.html',quality = quality)
     return 'hello world'
 
+
+@app.route('/search',methods=['GET','POST'])
+def search():
+    form = forms.SearchForm()
+    if form.validate_on_submit():
+
+        db = get_db()
+        cur = db.execute('select * from resource')
 
 
 @app.route('/comparision/<int:id>',methods=['GET','POST'])
@@ -172,6 +180,4 @@ def logout():
     return redirect(url_for('show_entries'))
 
 if __name__ == "__main__":
-
-    print(__name__)
     app.run(debug=True,port=8288)

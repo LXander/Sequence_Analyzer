@@ -1,0 +1,21 @@
+{% extends "banner.html" %}
+{% block body %}
+<div class="card resource-list">
+<table class="table table-hover ">
+  <thead>
+    <tr>
+      <th>Resource List</th>
+
+    </tr>
+  </thead>
+  <tbody>
+    {% for id in ids %}
+      <tr>
+        <td><a href='resource/{{id.id}}'>Resource {{id.id}}</a></td>
+      </tr>
+    {% endfor %}
+  </tbody>
+</table>
+  </div>
+
+{% endblock %}

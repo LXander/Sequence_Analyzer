@@ -1,0 +1,113 @@
+{% extends "banner.html" %}
+{% block body %}
+
+
+<div class="card resource-card">
+    <div class="card-header">
+
+        <ul class="nav nav-tabs card-header-tabs pull-xs-left" id="resourceTab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" data-toggle="tab" href="#home" role="tab" aria-controls="home">Resource : {{
+                    resource.id }}</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#profile" role="tab" aria-controls="profile">Comparision</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#info" role="tab" aria-controls="profile">Information</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" data-toggle="tab" href="#settings" role="tab" aria-controls="profile">Information</a>
+            </li>
+
+        </ul>
+
+    </div>
+    <div class="card-block">
+        <div class="tab-content">
+            <div class="tab-pane active" id="home" role="tabpanel">
+      <pre id="json">
+
+</pre>
+            </div>
+            <div class="tab-pane" id="profile" role="tabpanel">
+                {% if form.errors %}
+                <ul class="errors">
+                    {% for field_name, field_errors in form.errors|dictsort if field_errors %}
+                    {% for error in field_errors %}
+                    <li>{{ form[field_name].label }}: {{ error }}</li>
+                    {% endfor %}
+                    {% endfor %}
+                </ul>
+                {% endif %}
+
+
+                <form method="POST" action="{{ url_for('resource_page',id=resource.id)}}">
+                    {{ form.hidden_tag() }}
+
+                    <div class="form-group">
+                        {{form.methods.label}}
+                        {{form.methods()}}
+
+                    </div>
+                    <div class="form-group">
+                        {{form.standardsequence.label}}
+                    {{form.standardsequence()}}
+                    </div>
+
+                    <div class="form-group">
+                        {{form.MultipleSequence.lable}}
+                        {{form.MultipleSequence(class='multiselect',multiple='multiple')}}
+                    </div>
+                    {{form.submit(class='btn btn-primary')}}
+                    <!--<button type="submit" class="btn btn-primary">Comparision</button>
+               -->
+                </form>
+                <a href="{{  url_for('quality',id=resource.id) }}" class="btn btn-primary">Comparision</a>
+            </div>
+            <div class="tab-pane" id="info" role="tabpanel"></div>
+            <div class="tab-pane" id="settings" role="tabpanel"></div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    window.onload = function () {
+
+        document.getElementById("json").innerHTML = JSON.stringify(str, null, 2);
+    };
+
+    str = {{resource.json | safe}};
+
+    $(function () {
+        $('#resourceTab a:last').tab('show')
+    })
+
+
+</script>
+<script src="http://d3js.org/d3.v4.min.js" charset="utf-8"></script>
+<script>
+    var panel = d3.select('body')
+            .select('#info');
+
+    var sequence = {{resource.json | safe}};
+
+    panel.append('h1')
+            .text(sequence.type);
+
+    panel.append('h2')
+            .text(sequence.referenceSeq.referenceSeqId.coding[0].code);
+
+
+
+    var sequenceScale = d3.scaleLinear()
+            .domain([sequence.referenceSeq.windowStart,sequence.referenceSeq.windowEnd])
+            .range([0,800]);
+
+
+
+</script>
+
+
+{% endblock %}}
