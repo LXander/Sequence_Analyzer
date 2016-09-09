@@ -12,6 +12,15 @@
     width: 60%;
 }
 
+.search-card{
+
+    padding: 0 0 0 0;
+}
+.search-form {
+    margin-left: 20px;
+    padding-left: 20px;
+}
+
 .tooltip {
     position: absolute;
     width: auto;
@@ -28,3 +37,30 @@
     margin: 0 auto;
     box-shadow: inset 0px 0px 10px rgba(255, 255, 255, 0.5), 0px 0px 15px rgba(75, 75, 75, 0.3);
 }
+
+path {
+
+            stroke-width: 2;
+            fill: none;
+        }
+        .axis {
+            font-size: 11px;
+            fill: gray;
+        }
+
+        .x.axis line {
+            stroke: lightgrey;
+        }
+
+        .x.axis .minor {
+            stroke-opacity: .5;
+        }
+
+        .x.axis path {
+            stroke: #fafafa;
+        }
+
+        .y.axis line, .y.axis path {
+            fill: none;
+            stroke: lightgrey;
+        }

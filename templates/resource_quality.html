@@ -5,16 +5,14 @@
 <div class="card resource-card">
     <div class="card-header">
 
-           <ul class="nav nav-tabs card-header-tabs pull-xs-left" id="resourceTab" role="tablist">
+        <ul class="nav nav-tabs card-header-tabs pull-xs-left" id="resourceTab" role="tablist">
             <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#messages" role="tab" aria-controls="profile">Information</a>
+                <a class="nav-link active" data-toggle="tab" href="#messages" role="tab" aria-controls="profile">Information</a>
             </li>
 
             <li class="nav-item">
-                <a class="nav-link active" data-toggle="tab" href="#Jsons" role="tab" aria-controls="home">Json</a>
+                <a class="nav-link " data-toggle="tab" href="#Jsons" role="tab" aria-controls="home">Json</a>
             </li>
-
-
 
 
         </ul>
@@ -33,12 +31,13 @@
                     <thead>
                     <tr>
                         <th>Standard Sequence</th>
-                        <th>precision</th>
-
-                        <th>truthTP</th>
-                        <th>queryTP</th>
-                        <th>truthFN</th>
-                        <th>queryFP</th>
+                        <th>Precision</th>
+                        <th>FScore</th>
+                        <th>Recall</th>
+                        <th>TruthTP</th>
+                        <th>QueryTP</th>
+                        <th>TruthFN</th>
+                        <th>QueryFP</th>
                     </tr>
                     </thead>
                     <tbody id="tbody">
@@ -62,11 +61,39 @@
     }
 
     var by = function (a, b) {
-        b.y - a.y;
+        return (a.y - b.y) > 0 ? -1 : 1;
     }
 
-    arr.sort()
+    console.log(arr);
+    console.log(by);
+    arr.sort(by);
 
+    var format = function (number, form) {
+        var forms = form.split('.'), number = '' + number, numbers = number.split('.')
+                , leftnumber = numbers[0].split('')
+                , exec = function (lastMatch) {
+            if (lastMatch == '0' || lastMatch == '#') {
+                if (leftnumber.length) {
+                    return leftnumber.pop();
+                } else if (lastMatch == '0') {
+                    return lastMatch;
+                } else {
+                    return '';
+                }
+            } else {
+                return lastMatch;
+            }
+        }, string
+
+        string = forms[0].split('').reverse().join('').replace(/./g, exec).split('').reverse().join('');
+        string = leftnumber.join('') + string;
+
+        if (forms[1] && forms[1].length) {
+            leftnumber = (numbers[1] && numbers[1].length) ? numbers[1].split('').reverse() : [];
+            string += '.' + forms[1].replace(/./g, exec);
+        }
+        return string.replace("//.$/", '');
+    };
 
 
     var init = function (arr) {
@@ -76,7 +103,9 @@
             template += "<tr>";
 
             template += "<td>" + quality[i].standardSequence.text + "</td>";
-            template += "<td>" + quality[i].precision + "</td>";
+            template += "<td>" + format(parseFloat(quality[i].precision), '0.##') + "</td>";
+            template += "<td>" + format(parseFloat(quality[i].fScore), '0.##') + "</td>";
+            template += "<td>" + format(parseFloat(quality[i].recall), '0.##') + "</td>"
             template += "<td>" + quality[i].truthTP + "</td>";
             template += "<td>" + quality[i].queryTP + "</td>";
             template += "<td>" + quality[i].truthFN + "</td>";
@@ -90,22 +119,168 @@
     };
 
 
-        window.onload = function () {
+    window.onload = function () {
 
         document.getElementById("json").innerHTML = JSON.stringify(str, null, 2);
-            init(arr);
+        init(arr);
     };
 
     str = {{quality.text | safe}};
 
     $(function () {
-        $('#resourceTab a:last').tab('show')
+        $('#resourceTab a:first').tab('show')
     })
 
 
+</script>
+<script>
+    var qua = {{quality.text | safe}};
+    var quality = qua.quality;
+
+    var margin = {top: 60, right: 40, bottom: 50, left: 60};
+    var w = 700; // 寬
+    var h = 300; // 高
 
 
+    var names = []
 
+    var raw_dataset = []; //建立空的資料陣列
+    var precision = [];
+    var fscore = [];
+    var recall = [];
+
+    console.log(quality);
+    for (var i = 0; i < quality.length; i++) {
+
+        var data = [quality[i].precision, quality[i].fScore, quality[i].recall];
+        names.push(quality[i].standardSequence.text);
+        precision.push(quality[i].precision);
+        fscore.push(quality[i].fScore);
+        recall.push(quality[i].recall);
+        raw_dataset[i] = data;
+    }
+
+
+    //隨機產生一組隨機的數字陣列，數字的值，每次加減不超過5
+    //X是資料的數量，Y則是資料的值
+
+
+    var xScale = d3.scaleLinear().domain([0, 4]).range([30, w]);
+
+    var yScale = d3.scaleLinear().domain([0, 1]).range([h, 0]);
+
+    var precisionScale = d3.scaleLinear().domain([0, 1]).range([0.1, 0.9]);
+    var fscoreScale = d3.scaleLinear().domain([0, 1]).range([0.1, 0.9]);
+    var recallScale = d3.scaleLinear().domain([0, 1]).range([0.1, 0.9]);
+    var colormap = ["#F00", "#09F", "#0F0"];
+
+
+    var scale_dataset = [];
+    for (var i = 0; i < quality.length; i++) {
+        var data = [precisionScale(precision[i]), fscoreScale(fscore[i]), recallScale(recall[i])];
+        scale_dataset[i] = data;
+    }
+
+    console.log(scale_dataset);
+
+    // 增加一個line function，用來把資料轉為x, y
+    var line = d3.line()
+            .x(function (d, i) {
+                return xScale(i); //利用尺度運算資料索引，傳回x的位置
+            })
+            .y(function (d) {
+                return yScale(d); //利用尺度運算資料的值，傳回y的位置
+            })
+            .curve(d3.curveCatmullRom.alpha(0.5));
+
+    //增加一個SVG元素
+    var svg = d3.select('#messages').append('svg')
+            .attr('width', w + margin.left + margin.right) //將左右補滿
+            .attr('height', h + margin.top + margin.bottom) //上下補滿
+            .append('g') //增加一個群組g
+            .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+    // 增加x軸線，tickSize是軸線的垂直高度，-h會往上拉高
+    // tickSubdivide不清楚是什麼用處
+    var xAxis = d3.axisBottom(xScale).ticks(3).tickValues([0, 1, 2]).tickFormat(function (d) {
+        labels = ['Precision', 'FScore', 'Recall'];
+        return labels[d];
+    });
+    // SVG加入x軸線
+    svg.append('g')
+            .attr('class', 'x axis')
+            .attr('transform', 'translate(0,' + h + ')')
+            .call(xAxis);
+
+
+    // 建立y軸線，4個刻度，數字在左
+    var yAxisLeft = d3.axisLeft(yScale).ticks(10);
+    // SVG加入y軸線
+    svg.append('g')
+            .attr('class', 'y axis')
+            .attr('transform', 'translate(0,0)')
+            .call(yAxisLeft);
+
+
+    for (var i = 0; i < quality.length; i++) {
+        svg.append('path')
+                .attr('d', line([precisionScale(precision[i]), fscoreScale(fscore[i]), recallScale(recall[i])]))
+                .attr('stroke', colormap[i]);
+    }
+
+    for (var k = 0; k < scale_dataset.length; k++) {
+
+        svg.append('g')
+                .selectAll('circle')
+                .data(scale_dataset[k])
+                .enter()
+                .append('circle')
+                .attr('cx', function (d, i) {
+                    return xScale(i);
+                })
+                .attr('cy', function (d, i) {
+                    return yScale(d);
+                })
+                .attr('r', 5)
+                .attr('fill', colormap[k]);
+
+
+    }
+
+    var legend = svg.append('g');
+
+    svg.append('g')
+            .selectAll('text')
+            .data(names)
+            .enter()
+            .append('text')
+            .text(function (d) {
+                return d;
+            })
+            .attr('class', 'legend')
+            .attr('x', xScale(2.6))
+            .attr('y', function (d, i) {
+                return yScale(1 - i / 10.0) + 10;
+            })
+            .attr('fill', function (d, i) {
+                return colormap[i];
+            });
+
+
+    svg.append('g')
+            .selectAll('rect')
+            .data(names)
+            .enter()
+            .append('rect')
+            .attr('x', xScale(2.5))
+            .attr('y', function (d, i) {
+                return yScale(1 - i / 10.0);
+            })
+            .attr('width', 10)
+            .attr('height', 10)
+            .attr('fill', function (d, i) {
+                return colormap[i];
+            });
 
 
 </script>

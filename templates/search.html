@@ -1,9 +1,9 @@
 {% extends "banner.html" %}
 {% block body %}
 <div class="card list-card">
-    <div class="card-block">
+    <div class="card-block search-card">
         <div class="jumbotron jumbotron-fluid">
-            <form method="POST" action="{{ url_for('search')}}">
+            <form class='search-form' method="POST" action="{{ url_for('search')}}">
                 {{ form.hidden_tag() }}
                 <h1>Search Sequence</h1>
                 {% if form.errors %}
