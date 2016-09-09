@@ -4,14 +4,14 @@
 <table class="table table-hover ">
   <thead>
     <tr>
-      <th>Resource List</th>
+      <th>Searching {{keyword}} : {{num}} result found</th>
 
     </tr>
   </thead>
   <tbody>
-    {% for id in ids %}
+    {% for pair in pairs %}
       <tr>
-        <td><a href='sequence/{{id}}'>Resource {{id}}</a></td>
+        <td><a href='sequence/{{pair[0]}}'>{{pair[1]}}</a></td>
       </tr>
     {% endfor %}
   </tbody>

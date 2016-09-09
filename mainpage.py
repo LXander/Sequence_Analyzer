@@ -53,14 +53,14 @@ def gene_data_creater(geneDict):
     builder = example_builder.builder(geneDict)
     for _ in range(random.randint(3,15)):
         example = builder.build_example()
-        db.execute('insert into genedata(json) values(?)',
-                   [example])
+        db.execute('insert into genedata(se,json) values(?,?)',
+                   [str(example['id']),json.dumps(example)])
     db.commit()
 
 def gene_db_creater():
     db = get_db()
     db.execute('drop table if exists genedata;')
-    db.execute("create table genedata(id integer primary key autoincrement,'json' varchar not null);")
+    db.execute("create table genedata(id integer primary key autoincrement,'se' varchar not null,'json' varchar not null);")
     db.commit()
 
 @app.cli.command('initdb')
@@ -127,7 +127,8 @@ def resource_page(id):
             warp['referenceSeq'] = res['referenceSeq']
             quality = requests.post('http://127.0.0.1:8388/get_quality', json=warp)
             print (quality.text)
-            return render_template('resource_quality.html',quality = quality)
+            print(resource.keys())
+            return render_template('resource_quality.html',quality = quality,se = resource['se'],seq = ','.join(warp['standard_sequence'] ),method = warp['method'])
 
 
     print ("invalidate")
@@ -170,7 +171,9 @@ def sequence_page(id):
             warp['variant'] = res['variant']
             warp['referenceSeq'] = res['referenceSeq']
             quality = requests.post('http://127.0.0.1:8388/get_quality', json=warp)
-            return render_template('resource_quality.html', quality=quality)
+
+
+            return render_template('resource_quality.html', quality=quality,se = resource['se'],seq = ' , '.join(warp['standard_sequence'] ),method = warp['method'] )
 
     print("invalidate")
     db = get_db()
@@ -197,8 +200,10 @@ def search():
         for gene in genes:
             geneData[gene['id']] = json.loads(gene['json'])
         ids = [gene['id'] for gene in genes]
+        ses = [gene['se'] for gene in genes]
+        pairs = zip(ids,ses)
         print (ids)
-        return render_template('gene_resource_list.html',ids=ids)
+        return render_template('gene_resource_list.html',pairs=pairs,keyword=form.GeneName.data,num=len(ids),randint = random.randint)
 
 
 

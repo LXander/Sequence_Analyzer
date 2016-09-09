@@ -41,7 +41,7 @@
                 {% endif %}
 
 
-                <form method="POST" action="{{ url_for('resource_page',id=resource.id)}}">
+                <form method="POST" action="{{ url_for('sequence_page',id=resource.id)}}">
                     {{ form.hidden_tag() }}
 
                     <div class="form-group">
@@ -105,18 +105,19 @@
 
 
 
+    panel.append('h2')
+            .text('Sequence:    '+sequence.id);
+    panel.append('p')
+            .text('Type:    '+ sequence.type);
 
     panel.append('p')
-            .text('type:    '+ sequence.type);
+            .text('Refseq:    ' + sequence.referenceSeq.referenceSeqId.coding[0].code);
 
     panel.append('p')
-            .text('refseq:    ' + sequence.referenceSeq.referenceSeqId.coding[0].code);
+            .text('Start:    ' + sequence.referenceSeq.windowStart);
 
     panel.append('p')
-            .text('start:    ' + sequence.referenceSeq.windowStart);
-
-    panel.append('p')
-            .text('end:    ' + sequence.referenceSeq.windowEnd);
+            .text('End:    ' + sequence.referenceSeq.windowEnd);
 
 
     var variants = sequence.variant;

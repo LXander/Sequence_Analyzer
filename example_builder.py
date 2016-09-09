@@ -1,5 +1,9 @@
-import json
+import json,random
 import var_gen
+
+alphabeta = ['A','B','C','D','E','F','G','H','I','J']
+
+omegabeta = ['x','y','z']
 
 template = '''
 {
@@ -45,7 +49,8 @@ class builder:
         example['referenceSeq']['referenceSeqId']['coding'][0]['code'] = self.geneDict['ChrAccVer']
         example['referenceSeq']['windowStart'] = self.geneDict['ChrStart']
         example['referenceSeq']['windowEnd'] = self.geneDict['ChrStop']
-        return json.dumps(example)
+        example['id'] = 'f-'+str(alphabeta[random.randint(0,len(alphabeta)-1)])+str(alphabeta[random.randint(0,len(alphabeta)-1)])+str(random.randint(1000,9999))
+        return example
 
 
 
