@@ -25,7 +25,7 @@
                 <p>Observed Sequence: {{se|safe}}</p>
                 <p>Standard Sequence: {{seq|safe}}</p>
                 <p>Method: {{method|safe}}</p>
-                <table class="table table-striped">
+                <table class="table table-striped tablesorter" id="quality-table">
                     <thead>
                     <tr>
                         <th>Standard Sequence</th>
@@ -49,7 +49,9 @@
             </div>
 
 
-            <div class="tab-pane" id="settings" role="tabpanel">d</div>
+            <div class="tab-pane" id="settings" role="tabpanel">
+
+            </div>
         </div>
     </div>
 </div>
@@ -134,7 +136,14 @@
 
         document.getElementById("json").innerHTML = JSON.stringify(str, null, 2);
         init(arr);
+
     };
+
+    $(document).ready(function(){
+        $(function(){
+  $("#quality-table").tablesorter();
+});
+    });
 
     str = {{quality.text | safe}};
 
@@ -149,7 +158,7 @@
     var margin = {top: 60, right: 40, bottom: 50, left: 60};
     var w = 700; // 寬
     var h = 300; // 高
-
+    var color = d3.scaleOrdinal(d3.schemeCategory10);
 
     var names = []
 
@@ -231,30 +240,28 @@
             .call(yAxisLeft);
 
 
-    for (var i = 0; i < quality.length; i++) {
-        svg.append('path')
-                .attr('d', line([precisionScale(precision[i]), fscoreScale(fscore[i]), recallScale(recall[i])]))
-                .attr('stroke', colormap[i]);
-    }
-
-    for (var k = 0; k < scale_dataset.length; k++) {
-
+    for(var k=0;k<scale_dataset.length;k++){
+        var leng = scale_dataset.length;
         svg.append('g')
-                .selectAll('circle')
+                .selectAll('rect')
                 .data(scale_dataset[k])
                 .enter()
-                .append('circle')
-                .attr('cx', function (d, i) {
-                    return xScale(i);
+                .append('rect')
+                .attr('x',function(d,i){
+                    return xScale(k+i*0.25/leng);
                 })
-                .attr('cy', function (d, i) {
+                .attr('y',function(d){
                     return yScale(d);
                 })
-                .attr('r', 5)
-                .attr('fill', colormap[k]);
-
-
+                .attr('width',xScale(0.25/leng)-xScale(0))
+                .attr('height',function(d){
+                    return h-yScale(d);
+                })
+                .attr('fill',function(d,i){
+                    return color(i);
+                });
     }
+
 
     var legend = svg.append('g');
 
@@ -267,12 +274,12 @@
                 return d;
             })
             .attr('class', 'legend')
-            .attr('x', xScale(2.6))
+            .attr('x', xScale(3.1))
             .attr('y', function (d, i) {
                 return yScale(1 - i / 10.0) + 10;
             })
             .attr('fill', function (d, i) {
-                return colormap[i];
+                return color(i);
             });
 
 
@@ -281,14 +288,14 @@
             .data(names)
             .enter()
             .append('rect')
-            .attr('x', xScale(2.5))
+            .attr('x', xScale(3.0))
             .attr('y', function (d, i) {
                 return yScale(1 - i / 10.0);
             })
             .attr('width', 10)
             .attr('height', 10)
             .attr('fill', function (d, i) {
-                return colormap[i];
+                return color(i);
             });
 
 
