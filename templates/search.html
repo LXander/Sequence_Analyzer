@@ -16,10 +16,10 @@
                 </ul>
                 {% endif %}
 
-                <input type="text" class="span3" id="{{form.GeneName.name}}" name="{{form.GeneName.name}}"
+                <input type="text" class="form-control" id="{{form.GeneName.name}}" name="{{form.GeneName.name}}"
                        data-provide="typeahead" data-items="4"/>
                 <p></p>
-                <p>{{form.submit(class='btn btn-primary')}}</p>
+                {{form.submit(class='btn btn-primary search-btn')}}
 
             </form>
         </div>

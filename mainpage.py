@@ -4,6 +4,7 @@ import sqlite3
 from flask import Flask,request,session,g,redirect,url_for,abort,render_template,flash
 import example_builder,search_region,name_load
 import json,requests,forms,random
+from name_load import name_list,name_dict
 
 from flask_wtf.csrf import  CsrfProtect
 
@@ -186,7 +187,7 @@ def search():
     if form.validate_on_submit():
 
         gene_db_creater()
-        geneDicts = search_region.get_geneDicts(form.GeneName.data)
+        geneDicts = search_region.get_geneDicts(name_dict[form.GeneName.data])
         gene_data_creater(geneDicts[0])
 
         db = get_db()
@@ -201,7 +202,7 @@ def search():
 
 
 
-    return render_template('search.html',form=form,geneName = geneName)
+    return render_template('search.html',form=form,geneName = name_list)
 
 
 @app.route('/comparision/<int:id>',methods=['GET','POST'])

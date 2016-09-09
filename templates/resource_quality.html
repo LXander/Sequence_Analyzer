@@ -20,13 +20,7 @@
     </div>
     <div class="card-block">
         <div class="tab-content">
-            <div class="tab-pane active" id="Jsons" role="tabpanel">
-      <pre id="json">
-
-</pre>
-            </div>
-
-            <div class="tab-pane" id="messages" role="tabpanel">
+            <div class="tab-pane active" id="messages" role="tabpanel">
                 <table class="table table-striped">
                     <thead>
                     <tr>
@@ -44,6 +38,13 @@
                     </tbody>
                 </table>
             </div>
+            <div class="tab-pane " id="Jsons" role="tabpanel">
+      <pre id="json">
+
+</pre>
+            </div>
+
+
             <div class="tab-pane" id="settings" role="tabpanel">d</div>
         </div>
     </div>
@@ -51,6 +52,12 @@
 
 
 <script>
+    $(document).ready(function(){
+   $(function () {
+        $('#resourceTab a:first').tab('show')
+    })
+});
+
     qua = {{quality.text | safe}};
 
     quality = qua.quality;
@@ -127,9 +134,7 @@
 
     str = {{quality.text | safe}};
 
-    $(function () {
-        $('#resourceTab a:first').tab('show')
-    })
+
 
 
 </script>
