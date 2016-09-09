@@ -25,22 +25,7 @@
                 <p>Observed Sequence: {{se|safe}}</p>
                 <p>Standard Sequence: {{seq|safe}}</p>
                 <p>Method: {{method|safe}}</p>
-                <table class="table table-striped tablesorter" id="quality-table">
-                    <thead>
-                    <tr>
-                        <th>Standard Sequence</th>
-                        <th>Precision</th>
-                        <th>FScore</th>
-                        <th>Recall</th>
-                        <th>TruthTP</th>
-                        <th>QueryTP</th>
-                        <th>TruthFN</th>
-                        <th>QueryFP</th>
-                    </tr>
-                    </thead>
-                    <tbody id="tbody">
-                    </tbody>
-                </table>
+                <table id="table"></table>
             </div>
             <div class="tab-pane " id="Jsons" role="tabpanel">
       <pre id="json">
@@ -49,7 +34,7 @@
             </div>
 
 
-            <div class="tab-pane" id="settings" role="tabpanel">
+            <div class="tab-pane" id="Test" role="tabpanel">
 
             </div>
         </div>
@@ -67,19 +52,6 @@
     qua = {{quality.text | safe}};
 
     quality = qua.quality;
-
-    var arr = new Array()
-    for (var i = 0; i < quality.length; i++) {
-        arr[i] = {x: i, y: quality[i].precision}
-    }
-
-    var by = function (a, b) {
-        return (a.y - b.y) > 0 ? -1 : 1;
-    }
-
-    console.log(arr);
-    console.log(by);
-    arr.sort(by);
 
     var format = function (number, form) {
         var forms = form.split('.'), number = '' + number, numbers = number.split('.')
@@ -108,34 +80,47 @@
         return string.replace("//.$/", '');
     };
 
+    var table_content = {};
+    table_content['columns'] = [{field:'label',title:'Standard Sequence'},
+    {field:'Precision',title:'Precision'},
+    {field:'FScore',title:'FScore'},
+    {field:'Recall',title:'Recall'},
+    {field:'TruthTP',title:'TruthTP'},
+    {field:'QueryTP',title:'QueryTP'},
+        {field:'TruthFN',title:'TruthFN'},
+        {field:'QueryFP',title:'TruthFN'}];
+    table_content['data'] = [];
+    for(var i=0;i<quality.length;i++){
+        var item = {label:quality[i].standardSequence.text,
+        Precision:format(parseFloat(quality[i].precision), '0.##'),
+        FScore:format(parseFloat(quality[i].fScore), '0.##'),
+        Recall:format(parseFloat(quality[i].recall), '0.##'),
+        TruthTP:quality[i].truthTP,
+        QueryTP:quality[i].queryTP,
+        TruthFN:quality[i].truthFN,
+        QueryFP:quality[i].queryFP};
+        table_content.data.push(item);
 
-    var init = function (arr) {
-        var template = "";
-        for (var j = 0; j < arr.length; j++) {
-            var i = arr[j].x;
-            template += "<tr>";
+    }
 
-            template += "<td>" + quality[i].standardSequence.text + "</td>";
-            template += "<td>" + format(parseFloat(quality[i].precision), '0.##') + "</td>";
-            template += "<td>" + format(parseFloat(quality[i].fScore), '0.##') + "</td>";
-            template += "<td>" + format(parseFloat(quality[i].recall), '0.##') + "</td>"
-            template += "<td>" + quality[i].truthTP + "</td>";
-            template += "<td>" + quality[i].queryTP + "</td>";
-            template += "<td>" + quality[i].truthFN + "</td>";
-            template += "<td>" + quality[i].queryFP + "</td>";
+    var arr = new Array()
+    for (var i = 0; i < quality.length; i++) {
+        arr[i] = {x: i, y: quality[i].precision}
+    }
 
 
-            template += "</tr>";
-        }
-        document.getElementById("tbody").innerHTML = template;
 
-    };
+
+
+
+
+
+
 
 
     window.onload = function () {
 
         document.getElementById("json").innerHTML = JSON.stringify(str, null, 2);
-        init(arr);
 
     };
 
@@ -143,11 +128,15 @@
         $(function(){
   $("#quality-table").tablesorter();
 });
+        $(function(){
+  $("#table").tablesorter();
+});
     });
 
     str = {{quality.text | safe}};
 
 
+$('#table').bootstrapTable(table_content);
 
 
 </script>
@@ -248,7 +237,7 @@
                 .enter()
                 .append('rect')
                 .attr('x',function(d,i){
-                    return xScale(k+i*0.25/leng);
+                    return xScale(i+k*0.25/leng);
                 })
                 .attr('y',function(d){
                     return yScale(d);
@@ -257,9 +246,7 @@
                 .attr('height',function(d){
                     return h-yScale(d);
                 })
-                .attr('fill',function(d,i){
-                    return color(i);
-                });
+                .attr('fill',color(k));
     }
 
 
